@@ -1,0 +1,29 @@
+{
+  "id": "./",
+  "name": "Signal — Universal Encoder, Cipher & Hash Console",
+  "short_name": "Signal",
+  "description": "50+ offline tools to encode, decode, cipher, hash, generate and inspect data — everything runs locally in your browser.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#060910",
+  "theme_color": "#070b12",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "security", "developer"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Base64", "short_name": "Base64", "url": "./index.html#base64" },
+    { "name": "Hash Generator", "short_name": "Hash", "url": "./index.html#hash" },
+    { "name": "JSON Formatter", "short_name": "JSON", "url": "./index.html#json" },
+    { "name": "Password Generator", "short_name": "Password", "url": "./index.html#password" }
+  ]
+}

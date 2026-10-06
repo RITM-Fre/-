@@ -1,0 +1,21 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Signal">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="30%" r="80%">
+      <stop offset="0%"  stop-color="#101720"/>
+      <stop offset="100%" stop-color="#06090D"/>
+    </radialGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M 256 66 L 420 161 L 420 351 L 256 446 L 92 351 L 92 161 Z"
+        fill="none" stroke="#3BFF88" stroke-width="40"
+        stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="176" y="234" width="160" height="64" rx="8"
+        fill="#3BFF88" filter="url(#glow)"/>
+</svg>

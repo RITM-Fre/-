@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<!--
+  Content-Security-Policy via <meta> because GitHub Pages cannot send headers.
+  Everything is same-origin except the pinned CDN libraries and the web fonts.
+  'wasm-unsafe-eval' is required by hash-wasm, which compiles its hashing
+  kernels from WebAssembly. 'unsafe-inline' for styles is needed because the
+  app sets element styles at runtime. (frame-ancestors cannot be set from a
+  meta tag — it is ignored by design.)
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Signal — Universal Encoder, Cipher &amp; Hash Console</title>
+<meta name="description" content="50+ offline tools to encode, decode, cipher, hash, generate and inspect data — Base64, Morse, AES, RSA, JWT, TOTP, QR, UUID and much more. Everything runs locally in your browser.">
+<meta name="theme-color" content="#070b12">
+<meta name="color-scheme" content="dark light">
+<meta name="application-name" content="Signal">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Signal">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="msapplication-TileColor" content="#070b12">
+<meta name="msapplication-TileImage" content="assets/icon-192.png">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div class="bg-vignette" aria-hidden="true"></div>
+<div class="bg-scanlines" aria-hidden="true"></div>
+
+<a class="skip-link" href="#console">Skip to tools</a>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HEADER — three floating glass islands
+     On phones the whole header detaches and floats at the bottom.
+     ══════════════════════════════════════════════════════════════ -->
+<header class="site-header" id="site-header">
+
+  <div class="glass-island island-brand">
+    <a class="header-brand" href="#home" data-nav="home" title="Signal — Home" aria-label="Signal — Home">
+      <img class="brand-logo" src="assets/logo.svg" alt="" width="34" height="34">
+      <span class="brand-text">
+        <span class="brand-name">Signal</span>
+        <span class="brand-sub">· · −</span>
+      </span>
+    </a>
+  </div>
+
+  <div class="glass-island island-nav">
+    <nav class="header-nav" id="main-nav" aria-label="Primary tools"></nav>
+    <span class="nav-scroll-fade" aria-hidden="true"></span>
+  </div>
+
+  <div class="glass-island island-more">
+    <button class="icon-btn" id="search-btn" type="button" title="Search tools (Ctrl K)" aria-label="Search tools">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    </button>
+    <div class="nav-dropdown">
+      <button class="nav-btn nav-btn-more" id="other-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="other-panel">
+        <span>Tools</span>
+        <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-panel" id="other-panel" role="menu" aria-label="All tools">
+        <div class="dd-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="dd-filter" placeholder="Filter tools…" autocomplete="off" spellcheck="false" aria-label="Filter tools">
+        </div>
+        <div class="dd-list" id="dd-list"></div>
+      </div>
+    </div>
+  </div>
+
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════
+     STAGE
+     ══════════════════════════════════════════════════════════════ -->
+<div class="stage">
+  <main class="console" id="console" tabindex="-1">
+    <div class="boot-loader" id="boot-loader">
+      <div class="boot-ring" aria-hidden="true"></div>
+      <p>Spinning up the console…</p>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="footer-logo" href="#home" data-nav="home" title="Home">
+        <img class="footer-logo-img" src="assets/logo.svg" alt="" width="34" height="34">
+        <span class="footer-logo-text">Signal</span>
+      </a>
+      <p>Universal encoder, cipher, hash and inspection console. <strong>Runs entirely in your browser</strong> — nothing is ever uploaded.</p>
+      <div class="footer-badges">
+        <span class="chip">Offline-first</span>
+        <span class="chip">No tracking</span>
+        <span class="chip" id="tool-count-chip">— tools</span>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h5>Popular</h5>
+      <button data-nav="base64" type="button">Base64</button>
+      <button data-nav="hex" type="button">Hex</button>
+      <button data-nav="morse" type="button">Morse</button>
+      <button data-nav="json" type="button">JSON Formatter</button>
+      <button data-nav="jwt" type="button">JWT Decoder</button>
+    </div>
+
+    <div class="footer-col">
+      <h5>Crypto</h5>
+      <button data-nav="aes" type="button">AES</button>
+      <button data-nav="rsa" type="button">RSA</button>
+      <button data-nav="hash" type="button">Hashing</button>
+      <button data-nav="hmac" type="button">HMAC</button>
+      <button data-nav="totp" type="button">TOTP / 2FA</button>
+    </div>
+
+    <div class="footer-col">
+      <h5>Connect</h5>
+      <a href="https://ritm-fre.github.io/RITM-ppa" target="_blank" rel="noopener noreferrer">RITM Studio</a>
+      <a href="https://x.com/@Dahenavadi26" target="_blank" rel="noopener noreferrer">X / Twitter</a>
+      <a href="mailto:RITM.FreeLancer@gmail.com">Email</a>
+      <button data-nav="about" type="button">About &amp; Privacy</button>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span class="footer-copy">© <span id="year"></span> Signal Console — built for privacy, speed and clarity.</span>
+    <div class="footer-social">
+      <a href="https://x.com/@Dahenavadi26" target="_blank" rel="noopener noreferrer" title="X / Twitter" aria-label="X / Twitter">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="mailto:RITM.FreeLancer@gmail.com" title="Email" aria-label="Email">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4.236l-8 5.334-8-5.334V6l8 5.334L20 6v2.236z"/></svg>
+      </a>
+      <a href="https://ritm-fre.github.io/RITM-ppa" target="_blank" rel="noopener noreferrer" title="RITM Studio" aria-label="RITM Studio">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<!-- command palette -->
+<div class="palette" id="palette" hidden>
+  <div class="palette-backdrop" data-palette-close></div>
+  <div class="palette-box" role="dialog" aria-modal="true" aria-label="Search tools">
+    <div class="palette-input-row">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="text" id="palette-input" placeholder="Search 50+ tools — try “base64”, “jwt”, “uuid”…" autocomplete="off" spellcheck="false" aria-label="Search tools">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="palette-results" id="palette-results"></div>
+    <div class="palette-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span><kbd>↵</kbd> open</span>
+      <span><kbd>Ctrl</kbd><kbd>K</kbd> anywhere</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hash-wasm@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+
+<script src="assets/js/core.js"></script>
+<script src="assets/js/tools-encoding.js"></script>
+<script src="assets/js/tools-cipher.js"></script>
+<script src="assets/js/tools-hash.js"></script>
+<script src="assets/js/tools-utility.js"></script>
+<script src="assets/js/tools-media.js"></script>
+<script src="assets/js/boot.js"></script>
+
+</body>
+</html>

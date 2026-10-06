@@ -1,0 +1,32 @@
+{
+  "name": "signal-console",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Signal Console — a privacy-first, offline-capable encoder, cipher, hash and inspection workbench. 61 tools, zero build step, hosted as a static site.",
+  "keywords": [
+    "encoder",
+    "decoder",
+    "cipher",
+    "crypto",
+    "hash",
+    "base64",
+    "morse",
+    "aes",
+    "rsa",
+    "jwt",
+    "totp",
+    "steganography",
+    "offline",
+    "pwa",
+    "github-pages",
+    "static-site"
+  ],
+  "author": "RITM Studio",
+  "license": "SEE LICENSE IN README.md",
+  "homepage": "https://ritm-fre.github.io/RITM-ppa",
+  "scripts": {
+    "serve": "python -m http.server 8080",
+    "serve:node": "npx --yes serve . -l 8080",
+    "check": "node --check assets/js/core.js && node --check assets/js/tools-encoding.js && node --check assets/js/tools-cipher.js && node --check assets/js/tools-hash.js && node --check assets/js/tools-utility.js && node --check assets/js/tools-media.js && node --check assets/js/boot.js && node --check sw.js && echo \"all files parse OK\""
+  }
+}
